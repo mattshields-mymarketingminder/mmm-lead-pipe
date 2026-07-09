@@ -1,0 +1,9 @@
+package.json{
+
+  "name": "mmm-lead-pipe",
+
+  "version": "1.0.0",
+
+  "type": "module"
+
+}

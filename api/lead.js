@@ -173,7 +173,7 @@ async function sendQuoteToCustomer(lead) {
         📧 <a href="mailto:contact@mymarketingminder.com" style="color:#2C2406;">contact@mymarketingminder.com</a> &nbsp;·&nbsp;
         📞 <a href="tel:+447557471572" style="color:#2C2406;">07557 471572</a>
       </p>
-      <p style="font-size:14px;">Speak soon,<br><b>Matt — My Marketing Minder</b></p>
+      <p style="font-size:14px;">All the best,<br><b>My Marketing Minder</b></p>
     </div>
     <div style="background:#FBF8EF;padding:16px;text-align:center;font-size:11px;color:#9a8f66;">
       Google &amp; Meta certified · Serving businesses across the UK

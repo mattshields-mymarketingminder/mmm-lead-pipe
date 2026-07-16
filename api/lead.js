@@ -27,7 +27,7 @@ export default async function handler(req, res) {
     // quote-widget extras:
     quoteBreakdown: (data.quote_breakdown || "").trim(),
     quotedTotal: (data.quoted_total || "").trim(),
-    bookingUrl: (data.booking_url || "https://mymarketingminder.com/book-a-consultation/").trim(),
+    bookingUrl: (data.booking_url || "https://calendly.com/contact-mymarketingminder/30min").trim(),
     stage: (data.stage || "").trim(),
     submittedAt: new Date().toISOString(),
   };
@@ -160,12 +160,13 @@ async function sendQuoteToCustomer(lead) {
       <table style="width:100%;border-collapse:collapse;margin:18px 0;border:1px solid #eee;">${rows}</table>
       <p style="font-size:13px;color:#666;">All prices exclude VAT. Flat monthly fee, no percentage of ad spend, no long-term contracts — cancel anytime.</p>
       <div style="text-align:center;margin:28px 0;">
-        <a href="${escapeHtml(lead.bookingUrl)}" style="background:#EBC522;color:#2C2406;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:8px;display:inline-block;font-size:15px;">Book your free assessment →</a>
+        <a href="${escapeHtml(lead.bookingUrl)}" style="background:#2C2406;color:#EBC522;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:8px;display:inline-block;font-size:15px;margin:0 4px 10px;">📅 Book a 30-min call →</a>
+        <a href="https://wa.me/447557471572" style="background:#25D366;color:#ffffff;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:8px;display:inline-block;font-size:15px;margin:0 4px 10px;">💬 WhatsApp us</a>
       </div>
       <p style="font-size:14px;line-height:1.6;">Prefer to talk it through? Reply to this email or reach me directly:</p>
       <p style="font-size:14px;line-height:1.7;">
         📧 <a href="mailto:contact@mymarketingminder.com" style="color:#2C2406;">contact@mymarketingminder.com</a><br>
-        📞 <a href="tel:+447830519173" style="color:#2C2406;">07830 519173</a>
+        📞 <a href="tel:+447557471572" style="color:#2C2406;">07557 471572</a>
       </p>
       <p style="font-size:14px;">Speak soon,<br><b>Matt — My Marketing Minder</b></p>
     </div>

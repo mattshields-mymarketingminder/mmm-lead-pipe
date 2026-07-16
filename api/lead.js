@@ -156,16 +156,21 @@ async function sendQuoteToCustomer(lead) {
     </div>
     <div style="padding:26px 24px;">
       <p style="font-size:15px;">Hi ${escapeHtml(lead.firstName) || "there"},</p>
-      <p style="font-size:15px;line-height:1.6;">Thanks for building a quote with us. Here's a summary of what you put together:</p>
+      <p style="font-size:15px;line-height:1.6;">Here's the quote you built — thanks for taking a look:</p>
       <table style="width:100%;border-collapse:collapse;margin:18px 0;border:1px solid #eee;">${rows}</table>
       <p style="font-size:13px;color:#666;">All prices exclude VAT. A simple, transparent flat monthly fee with no long-term contracts — cancel anytime.</p>
-      <div style="text-align:center;margin:28px 0;">
-        <a href="${escapeHtml(lead.bookingUrl)}" style="background:#2C2406;color:#EBC522;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:8px;display:inline-block;font-size:15px;margin:0 4px 10px;">📅 Book a 30-min call →</a>
-        <a href="https://wa.me/447557471572" style="background:#25D366;color:#ffffff;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:8px;display:inline-block;font-size:15px;margin:0 4px 10px;">💬 WhatsApp us</a>
+
+      <div style="background:#FBF8EF;border-radius:10px;padding:22px 20px;margin:26px 0;text-align:center;">
+        <p style="font-size:17px;font-weight:bold;color:#2C2406;margin:0 0 6px;">Ready to turn this into results?</p>
+        <p style="font-size:14px;color:#463b0f;line-height:1.6;margin:0 0 18px;">The quickest way to get started is a free 30-minute call — we'll walk through exactly what you'd get for this price and answer any questions. No pressure, no obligation.</p>
+        <a href="${escapeHtml(lead.bookingUrl)}" style="background:#2C2406;color:#EBC522;text-decoration:none;font-weight:bold;padding:15px 30px;border-radius:8px;display:inline-block;font-size:16px;margin:0 4px 10px;">📅 Book your free call →</a>
+        <a href="https://wa.me/447557471572" style="background:#25D366;color:#ffffff;text-decoration:none;font-weight:bold;padding:15px 30px;border-radius:8px;display:inline-block;font-size:16px;margin:0 4px 10px;">💬 WhatsApp us now</a>
       </div>
-      <p style="font-size:14px;line-height:1.6;">Prefer to talk it through? Reply to this email or reach me directly:</p>
-      <p style="font-size:14px;line-height:1.7;">
-        📧 <a href="mailto:contact@mymarketingminder.com" style="color:#2C2406;">contact@mymarketingminder.com</a><br>
+
+      <p style="font-size:14px;line-height:1.6;">Not sure which services are right for you? That's exactly what the call is for — book a slot above or message us on WhatsApp and we'll point you in the right direction.</p>
+      <p style="font-size:13px;color:#666;line-height:1.7;margin-top:18px;">
+        Or reach me directly:<br>
+        📧 <a href="mailto:contact@mymarketingminder.com" style="color:#2C2406;">contact@mymarketingminder.com</a> &nbsp;·&nbsp;
         📞 <a href="tel:+447557471572" style="color:#2C2406;">07557 471572</a>
       </p>
       <p style="font-size:14px;">Speak soon,<br><b>Matt — My Marketing Minder</b></p>

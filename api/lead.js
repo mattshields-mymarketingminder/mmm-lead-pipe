@@ -27,7 +27,7 @@ export default async function handler(req, res) {
     // quote-widget extras:
     quoteBreakdown: (data.quote_breakdown || "").trim(),
     quotedTotal: (data.quoted_total || "").trim(),
-    bookingUrl: (data.booking_url || "https://calendly.com/contact-mymarketingminder/30min").trim(),
+    bookingUrl: (data.booking_url || "https://mymarketingminder.com/free-marketing-consultation/").trim(),
     stage: (data.stage || "").trim(),
     submittedAt: new Date().toISOString(),
   };
@@ -158,7 +158,7 @@ async function sendQuoteToCustomer(lead) {
       <p style="font-size:15px;">Hi ${escapeHtml(lead.firstName) || "there"},</p>
       <p style="font-size:15px;line-height:1.6;">Thanks for building a quote with us. Here's a summary of what you put together:</p>
       <table style="width:100%;border-collapse:collapse;margin:18px 0;border:1px solid #eee;">${rows}</table>
-      <p style="font-size:13px;color:#666;">All prices exclude VAT. Flat monthly fee, no percentage of ad spend, no long-term contracts — cancel anytime.</p>
+      <p style="font-size:13px;color:#666;">All prices exclude VAT. A simple, transparent flat monthly fee with no long-term contracts — cancel anytime.</p>
       <div style="text-align:center;margin:28px 0;">
         <a href="${escapeHtml(lead.bookingUrl)}" style="background:#2C2406;color:#EBC522;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:8px;display:inline-block;font-size:15px;margin:0 4px 10px;">📅 Book a 30-min call →</a>
         <a href="https://wa.me/447557471572" style="background:#25D366;color:#ffffff;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:8px;display:inline-block;font-size:15px;margin:0 4px 10px;">💬 WhatsApp us</a>

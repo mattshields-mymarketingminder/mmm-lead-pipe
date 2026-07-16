@@ -169,7 +169,7 @@ async function sendQuoteToCustomer(lead) {
 
       <p style="font-size:14px;line-height:1.6;">Not sure which services are right for you? That's exactly what the call is for — book a slot above or message us on WhatsApp and we'll point you in the right direction.</p>
       <p style="font-size:13px;color:#666;line-height:1.7;margin-top:18px;">
-        Or reach me directly:<br>
+        Or reach us directly:<br>
         📧 <a href="mailto:contact@mymarketingminder.com" style="color:#2C2406;">contact@mymarketingminder.com</a> &nbsp;·&nbsp;
         📞 <a href="tel:+447557471572" style="color:#2C2406;">07557 471572</a>
       </p>

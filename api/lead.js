@@ -113,6 +113,66 @@ async function notify(d) {
   });
 }
 
+// ---------- Brevo: send the quote to the customer ----------
+async function sendQuoteToCustomer(d) {
+  if (!BREVO_API_KEY || d.stage !== 'quote_completed' || !d.email) return;
+
+  const first = d.firstName || 'there';
+  const rows = String(d.quote_breakdown || '')
+    .split('\n')
+    .filter(Boolean)
+    .map(l => `<tr><td style="padding:8px 0;border-bottom:1px solid #eee">${esc(l)}</td></tr>`)
+    .join('');
+
+  const html = `
+  <div style="background:#FBF9F3;padding:28px 0;font-family:Arial,sans-serif;color:#2C2406">
+    <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:12px;padding:32px">
+      <h1 style="margin:0 0 6px;font-size:24px">Your quote, ${esc(first)}</h1>
+      <p style="margin:0 0 24px;color:#666;font-size:15px">
+        Here's the pricing you built. No obligation, and nothing starts until you say so.
+      </p>
+
+      <table width="100%" style="font-size:15px;border-collapse:collapse">${rows}</table>
+
+      <div style="background:#2C2406;border-radius:10px;padding:20px;margin:24px 0;text-align:center">
+        <div style="color:rgba(255,255,255,.6);font-size:13px;letter-spacing:1px">YOUR MONTHLY TOTAL</div>
+        <div style="color:#EBC522;font-size:34px;font-weight:800;margin-top:4px">£${esc(d.quoted_total)}</div>
+        <div style="color:rgba(255,255,255,.6);font-size:13px">ex VAT${d.discount_pct && d.discount_pct !== '0' ? ` &middot; includes ${esc(d.discount_pct)}% bundle discount` : ''}</div>
+      </div>
+
+      <div style="text-align:center;margin:26px 0">
+        <a href="https://mymarketingminder.com/free-marketing-consultation/"
+           style="background:#EBC522;color:#2C2406;font-weight:bold;font-size:16px;padding:14px 30px;border-radius:8px;text-decoration:none;display:inline-block">
+          Book a free consultation &rarr;
+        </a>
+      </div>
+
+      <p style="font-size:14px;color:#666;line-height:1.6;margin:0 0 20px">
+        Prefer to talk it through? Reply to this email, call
+        <a href="tel:+447557471572" style="color:#2C2406">07557 471572</a>, or
+        <a href="https://wa.me/447557471572" style="color:#2C2406">message on WhatsApp</a>.
+      </p>
+
+      <p style="font-size:12px;color:#999;border-top:1px solid #eee;padding-top:16px;margin:0">
+        Prices ex VAT. No long-term contracts, cancel anytime.<br>
+        My Marketing Minder &middot; Edinburgh
+      </p>
+    </div>
+  </div>`;
+
+  await fetch(`${BREVO_API}/smtp/email`, {
+    method: 'POST',
+    headers: { 'api-key': BREVO_API_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      sender: { name: 'My Marketing Minder', email: NOTIFY_EMAIL },
+      to: [{ email: d.email, name: [d.firstName, d.lastName].filter(Boolean).join(' ') || undefined }],
+      replyTo: { email: NOTIFY_EMAIL },
+      subject: `Your quote from My Marketing Minder${d.quoted_total ? ` — £${d.quoted_total}/mo` : ''}`,
+      htmlContent: html
+    })
+  });
+}
+
 // ---------- Forward to the CRM ----------
 async function toCrm(d) {
   if (!CRM_LEAD_URL) return;
@@ -138,12 +198,13 @@ export default async function handler(req, res) {
   const results = await Promise.allSettled([
     upsertContact(d),
     notify(d),
+    sendQuoteToCustomer(d),
     toCrm(d)
   ]);
 
   results.forEach((r, i) => {
     if (r.status === 'rejected') {
-      console.error(['brevo-contact', 'brevo-email', 'crm'][i], 'failed:', r.reason);
+      console.error(['brevo-contact', 'notify-me', 'quote-to-customer', 'crm'][i], 'failed:', r.reason);
     }
   });
 

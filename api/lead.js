@@ -118,47 +118,151 @@ async function sendQuoteToCustomer(d) {
   if (!BREVO_API_KEY || d.stage !== 'quote_completed' || !d.email) return;
 
   const first = d.firstName || 'there';
+
+  // Bold the service name, keep the price/spend detail lighter — service should
+  // register before the number does.
   const rows = String(d.quote_breakdown || '')
     .split('\n')
     .filter(Boolean)
-    .map(l => `<tr><td style="padding:8px 0;border-bottom:1px solid #eee">${esc(l)}</td></tr>`)
+    .map(line => {
+      const m = line.match(/^(.*?):\s*(£.+)$/);
+      const label = m ? m[1] : line;
+      const price = m ? m[2] : '';
+      return `<tr>
+                <td style="padding:12px 0;border-bottom:1px solid #eee;font-size:15px;color:#2C2406">${esc(label)}</td>
+                <td style="padding:12px 0;border-bottom:1px solid #eee;font-size:16px;font-weight:800;color:#2C2406;text-align:right;white-space:nowrap">${esc(price)}</td>
+              </tr>`;
+    })
     .join('');
 
-  const html = `
-  <div style="background:#FBF9F3;padding:28px 0;font-family:Arial,sans-serif;color:#2C2406">
-    <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:12px;padding:32px">
-      <h1 style="margin:0 0 6px;font-size:24px">Your quote, ${esc(first)}</h1>
-      <p style="margin:0 0 24px;color:#666;font-size:15px">
-        Here's the pricing you built. No obligation, and nothing starts until you say so.
+  const html = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin:0;padding:0">
+
+  <!-- Preheader: controls the inbox preview line, hidden in the rendered email -->
+  <div style="display:none;max-height:0;overflow:hidden;font-size:1px;color:#FBF9F3;line-height:1px">
+    Here's your custom quote, ${esc(first)} — no obligation, no contract, ready to review.
+  </div>
+  <div style="display:none;max-height:0;overflow:hidden">&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;</div>
+
+  <div style="background:#FBF9F3;padding:28px 0;font-family:Georgia,'Playfair Display',serif;color:#2C2406">
+    <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:12px;padding:32px;font-family:Arial,Helvetica,sans-serif">
+
+      <div style="text-align:center;margin-bottom:20px">
+        <div style="font-family:Georgia,'Playfair Display',serif;font-weight:700;font-size:20px;color:#2C2406;letter-spacing:.3px">
+          my marketing minder
+        </div>
+      </div>
+
+      <div style="text-align:center;margin-bottom:18px">
+        <span style="background:#2C2406;color:#EBC522;font-size:12px;font-weight:800;letter-spacing:.5px;padding:6px 14px;border-radius:20px;display:inline-block">
+          &#127942; GOOGLE &amp; META CERTIFIED
+        </span>
+      </div>
+
+      <h1 style="font-family:Georgia,'Playfair Display',serif;margin:0 0 6px;font-size:26px;text-align:center;font-weight:700">
+        Your quote, ${esc(first)}
+      </h1>
+      <p style="margin:0 0 24px;color:#666;font-size:15px;text-align:center">
+        No obligation, no contract. Here's the pricing you built.
       </p>
 
-      <table width="100%" style="font-size:15px;border-collapse:collapse">${rows}</table>
+      <table width="100%" style="font-size:15px;border-collapse:collapse" cellpadding="0" cellspacing="0">${rows}</table>
 
       <div style="background:#2C2406;border-radius:10px;padding:20px;margin:24px 0;text-align:center">
         <div style="color:rgba(255,255,255,.6);font-size:13px;letter-spacing:1px">YOUR MONTHLY TOTAL</div>
         <div style="color:#EBC522;font-size:34px;font-weight:800;margin-top:4px">£${esc(d.quoted_total)}</div>
-        <div style="color:rgba(255,255,255,.6);font-size:13px">ex VAT${d.discount_pct && d.discount_pct !== '0' ? ` &middot; includes ${esc(d.discount_pct)}% bundle discount` : ''}</div>
+        <div style="color:rgba(255,255,255,.6);font-size:13px">ex VAT</div>
+        ${d.discount_pct && d.discount_pct !== '0' ? `
+        <div style="margin-top:12px">
+          <span style="background:#EBC522;color:#2C2406;font-size:12.5px;font-weight:800;letter-spacing:.3px;padding:6px 14px;border-radius:20px;display:inline-block">
+            &#10003; ${esc(d.discount_pct)}% BUNDLE DISCOUNT APPLIED
+          </span>
+        </div>` : ''}
+        <div style="margin-top:16px">
+          <a href="https://mymarketingminder.com/free-marketing-consultation/"
+             style="background:#EBC522;color:#2C2406;font-weight:bold;font-size:14px;padding:11px 22px;border-radius:8px;text-decoration:none;display:inline-block">
+            Book a call to discuss your next steps &rarr;
+          </a>
+        </div>
       </div>
 
-      <div style="text-align:center;margin:26px 0">
+      <!-- Trust strip moved ABOVE the CTA: justify before you ask -->
+      <div style="background:#FBF9F3;border-radius:10px;padding:18px 16px;margin:0 0 22px">
+        <p style="font-size:11.5px;color:#9a8f66;letter-spacing:.5px;font-weight:700;margin:0 0 12px;text-align:center">
+          WHY BUSINESSES CHOOSE US
+        </p>
+        <table width="100%" style="border-collapse:collapse">
+          <tr>
+            <td width="50%" style="padding:6px;font-size:13px;color:#555;vertical-align:top">
+              <b style="color:#2C2406">£0</b> setup &amp; cancellation fees
+            </td>
+            <td width="50%" style="padding:6px;font-size:13px;color:#555;vertical-align:top">
+              <b style="color:#2C2406">No long-term contracts</b> &mdash; cancel anytime
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:6px;font-size:13px;color:#555;vertical-align:top">
+              <b style="color:#2C2406">1:1 direct access</b> to your specialist
+            </td>
+            <td style="padding:6px;font-size:13px;color:#555;vertical-align:top">
+              <b style="color:#2C2406">5% of profits</b> go to charity
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Single clear ask -->
+      <div style="text-align:center;margin:0 0 10px">
         <a href="https://mymarketingminder.com/free-marketing-consultation/"
-           style="background:#EBC522;color:#2C2406;font-weight:bold;font-size:16px;padding:14px 30px;border-radius:8px;text-decoration:none;display:inline-block">
+           style="background:#EBC522;color:#2C2406;font-weight:bold;font-size:16px;padding:14px 32px;border-radius:8px;text-decoration:none;display:inline-block">
           Book a free consultation &rarr;
         </a>
       </div>
-
-      <p style="font-size:14px;color:#666;line-height:1.6;margin:0 0 20px">
-        Prefer to talk it through? Reply to this email, call
-        <a href="tel:+447557471572" style="color:#2C2406">07557 471572</a>, or
-        <a href="https://wa.me/447557471572" style="color:#2C2406">message on WhatsApp</a>.
+      <p style="text-align:center;font-size:13px;color:#999;margin:0 0 6px">
+        30 minutes, no obligation &mdash; you'll speak to a specialist, not a sales rep.
+      </p>
+      <p style="text-align:center;font-size:12.5px;color:#9a8f66;margin:0 0 28px">
+        Prefer not to book yet? Your specialist will follow up personally within 24 hours.
       </p>
 
-      <p style="font-size:12px;color:#999;border-top:1px solid #eee;padding-top:16px;margin:0">
+      <blockquote style="margin:0 0 26px;padding:16px 18px;background:#FBF9F3;border-left:3px solid #EBC522;border-radius:0 8px 8px 0">
+        <p style="margin:0 0 6px;font-size:13.5px;color:#555;font-style:italic;line-height:1.5">
+          "Managed to scale my business without having to worry about the marketing side. Just left it to them. Highly recommended!"
+        </p>
+        <p style="margin:0;font-size:12px;color:#999;font-weight:700">John M. &middot; Boiler Installations</p>
+      </blockquote>
+
+      <p style="font-size:12px;color:#9a8f66;letter-spacing:.5px;font-weight:700;margin:0 0 12px;text-align:center">
+        NOT READY TO BOOK? TALK TO US DIRECTLY
+      </p>
+      <table width="100%" style="border-collapse:collapse;margin:0 0 24px">
+        <tr>
+          <td width="50%" style="padding:0 6px 0 0">
+            <a href="https://wa.me/447557471572?text=Hi%2C%20I%27ve%20just%20got%20a%20quote%20and%20have%20a%20question"
+               style="display:block;text-align:center;background:#25D366;color:#fff;font-weight:700;font-size:14px;padding:12px 8px;border-radius:8px;text-decoration:none">
+              &#128172; WhatsApp Us
+            </a>
+          </td>
+          <td width="50%" style="padding:0 0 0 6px">
+            <a href="tel:+447557471572"
+               style="display:block;text-align:center;background:#fff;color:#2C2406;font-weight:700;font-size:14px;padding:12px 8px;border-radius:8px;text-decoration:none;border:2px solid #2C2406">
+              &#128222; Call 07557 471572
+            </a>
+          </td>
+        </tr>
+      </table>
+      <p style="font-size:12.5px;color:#999;text-align:center;margin:0 0 20px">
+        Or just reply to this email &mdash; it comes straight to us.
+      </p>
+
+      <p style="font-size:12px;color:#999;border-top:1px solid #eee;padding-top:16px;margin:0;text-align:center">
         Prices ex VAT. No long-term contracts, cancel anytime.<br>
-        My Marketing Minder &middot; Edinburgh
+        My Marketing Minder
       </p>
     </div>
-  </div>`;
+  </div>
+</body></html>`;
 
   await fetch(`${BREVO_API}/smtp/email`, {
     method: 'POST',
@@ -167,7 +271,9 @@ async function sendQuoteToCustomer(d) {
       sender: { name: 'My Marketing Minder', email: NOTIFY_EMAIL },
       to: [{ email: d.email, name: [d.firstName, d.lastName].filter(Boolean).join(' ') || undefined }],
       replyTo: { email: NOTIFY_EMAIL },
-      subject: `Your quote from My Marketing Minder${d.quoted_total ? ` — £${d.quoted_total}/mo` : ''}`,
+      subject: d.services
+        ? `Your ${d.services} quote is ready — £${d.quoted_total}/mo`
+        : `Your quote from My Marketing Minder — £${d.quoted_total}/mo`,
       htmlContent: html
     })
   });
